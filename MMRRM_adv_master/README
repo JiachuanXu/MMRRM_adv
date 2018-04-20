@@ -18,7 +18,8 @@ Quick Start:
 1) Edit user changable parameters, flags & definition in 
    	WORKDIR/Programs/header/mmrrm_adv.h
    (You could just turn off all the analysis flags if you only need the output data cube)
-   (NOTE: IF YOU DO NOT HAVE Ts DATA, SET BOTH "OPTHIN" AND "HIGHTS"=1)
+   (NOTE: IF YOU DO NOT HAVE Ts DATA, SET BOTH "OPTHIN" AND "HIGHTS"=1, AND SET Ts DIR IN
+    WORKDIR/prmt/arguments_mmrrm_adv.dat "NULL")
 2) Re-compile the program
 3) Edit arguments file 
    	WORKDIR/prmt/args_mmrrm_adv.dat

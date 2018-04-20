@@ -160,7 +160,7 @@ Reading input files...\n",info[real_ct].zrl);
 		// do not read-in Ts data cube and feed program with fake Ts <--------------fake Ts flag
 		if (HIGHTS==1 && OPTHIN==1){
 			Ts_Evol[real_ct] = FLT_MAX;
-			for (unsigned long long i; i<box_vol(dim_nbody), i++){
+			for (unsigned long long i; i<box_vol(dim_nbody); i++){
 				Ts[i] = FLT_MAX;
 			}
 		}

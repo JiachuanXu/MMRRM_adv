@@ -37,7 +37,7 @@
 #define in_tr_c(i,j,k,dim) (unsigned long long)(k+(dim/2+1llu)*(j+dim*i)) //Index transformation for complex box
 #define bin_index(kint,imu) (unsigned long long)((kint + ORDER/2 + 1)*(kint - ORDER/2)/2 + imu) // Index transformation for mu decomposition
 
-/*  Begin user changable definitions */
+/****  Begin user changable definitions ****/
 #define M_FLOAT  35	//The max lenth for a float number in character format
 #define M_PATH  300	//The max lenth for boxes_PATH
 #define M_BOXNAME  300	//The max lenth for box name
@@ -72,10 +72,15 @@
 #define MU_H (double)(1.67353276e-24)	//Mass of one H atom, g
 #define Ts_lim (double)(9.999e10) //Set the Ts in high temperature limit
 
-/*	FLAGS	*/
+/****	FLAGS	****/
+/* Flag for observer frame of output data cube  */
 #define MESH2MESH 0 // 1 to calculate observables in redshift space, 0 in real space
-#define OPTHIN 0 // 1 for artificially applying optical thin approximation, 0 for standard routine
-#define HIGHTS 0 // 1 for artificially applying Ts>>T_cmb approximation, 0 for standard routine
+/* Flag for approximations in RSD correction */
+/* If you do not have Ts information, set both OPTHIN & HIGHTS = 1*/
+#define OPTHIN 1 // 1 for artificially applying optical thin approximation, 0 for standard routine
+#define HIGHTS 1 // 1 for artificially applying Ts>>T_cmb approximation, 0 for standard routine
+/* Flags for analysis subroutines */
+// You could just turn off all of them if you only need the output data cube
 //#define QLIN 0 // 1 to turn on quasi-linear \mu_k decomposition, 0 to turn off. (see Y. Mao er al. 2012)
 #define POWINK 1 // 1 to turn on calculating power spectrum in k interval, 0 for not
 #define POWINLOGK 1 // 1 to turn on calculating power spectrum in log(k) interval, 0 for not

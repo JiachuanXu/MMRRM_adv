@@ -31,6 +31,9 @@ END
 <n_den i>: Nbody simulation density fluctuation box, unitless
 <n_xHI i>: Nbody simulation neutral fraction box, unitless
 <n_Ts i>: Nbody simulation spin temperature box, in unit of K
+
+		  [NOTE: IF YOU DO NOT HAVE TS INFO, SET BOTH FLAG "OPTHIN" & "HIGHTS" =1, AND SET THIS TERM "NULL"]
+
 <n_vx/vy/vz i>: nbody simulation peculiar velocity boxes along x/y/z, in unit of COMOVING Mpc/s
 <z i>: float, simulation redshift, i.e. 6.42
 

@@ -111,6 +111,7 @@ int main(int argc, char *argv[]){
 		printf("*** pixelfluxpdf.c: Error: Can't creat pdf file\n");
 		exit(EXIT_FAILURE);
 	}
+	fprintf(PDF, "# delta_Tb counts_fraction\n");
 	for(int ct=0;ct<PDFBIN;ct++){
 		count_bin[ct] /= (double)(3.0*box_vol(dim));
 		//Tb_diff_bin[ct] -= ave[0];

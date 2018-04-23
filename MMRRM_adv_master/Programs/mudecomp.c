@@ -147,6 +147,7 @@ int main(int argc,char *argv[]){
 	if(MUDECINK){
 		getname_MD_Lin(mudecomp_lin);
 		MUDECOMP_LIN = fopen(mudecomp_lin,"w");
+		fprintf(MUDECOMP_LIN,"# k\tmu4_fit\tmu4_fit_err\tchi2\tPmu4\tscatter\n");
 		for(int ct=ORDER/2;ct<mid;ct++){
 			c2_lin[ct - ORDER/2] *= 4.0*PI*pow((double)ct,3.0)/pow((double)dim_nbody,6.0);
 			dev_lin[ct - ORDER/2] *= 4.0*PI*pow((double)ct,3.0)/pow((double)dim_nbody,6.0);
@@ -164,6 +165,7 @@ int main(int argc,char *argv[]){
 	if(MUDECINLOGK){
 		getname_MD_Log(mudecomp_log);
 		MUDECOMP_LOG = fopen(mudecomp_log,"w");
+		fprintf(MUDECOMP_LOG,"# k\tmu4_fit\tmu4_fit_err\tchi2\tPmu4\tscatter\n");
 		for(int ct_log=0;ct_log<nintvl;ct_log++){
 			karray[ct_log] = exp(dlnk*(double)ct_log+log((double)mymax(kmincut,ORDER/2)));
 			c2_log[ct_log] *= 4.0*PI*pow((double)karray[ct_log],3.0)/pow((double)dim_nbody,6.0);

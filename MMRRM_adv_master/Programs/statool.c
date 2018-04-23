@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
 	system(cmd);
 	getname_stat(STAT_NAME, local);
 	STAT=fopen(STAT_NAME,"w");
-	fprintf(STAT,"%5s\t%12s\t%12s\t%12s\t%12s\t%12s\n","zrl","Tb_mean","Tb_dev","Tb_rms","Skewness","Kurtosis");
+	fprintf(STAT,"# %5s\t%12s\t%12s\t%12s\t%12s\t%12s\n","zrl","Tb_mean","Tb_dev","Tb_rms","Skewness","Kurtosis");
 	
 /************************* Start Calculating Statistics ************************/
 

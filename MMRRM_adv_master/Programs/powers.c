@@ -124,6 +124,7 @@ int main(int argc, char *argv[]){
 			fclose(LOG);
 			exit(EXIT_FAILURE);
 		}
+		fprintf(PS_LIN, "# k\tps\tps_err\n");
 		for(int i=0;i<mid-1;i++)
 			fprintf(PS_LIN,"%E\t%E\t%E\n",k_array_lin[i],power_spec_lin[i],err_lin[i]*power_spec_lin[i]);// kint k_magnitude power deviation
 		fclose(PS_LIN);
@@ -153,6 +154,7 @@ int main(int argc, char *argv[]){
 			fclose(LOG);
 			exit(EXIT_FAILURE);
 		}
+		fprintf(PS_LOG, "# k\tps\tps_err\n");
 		for(int q=0;q<nintvl;q++)
 			fprintf(PS_LOG,"%E\t%E\t%E\n",k_array_log[q],power_spec_log[q],power_spec_log[q]*err_log[q]);// k_magnitude power deviation
 		fclose(PS_LOG);

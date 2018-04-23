@@ -159,7 +159,9 @@ float cal_Tb(const float * delta,const float * nHI,const float * Ts,
 	char char_infinite[]="Diverged cells:";
 
 	double *tau_array; // optical depth data cube <---------------------------------Debug
-	tau_array = (double *)malloc(sizeof(double)*box_vol(dim_nbody));
+	if(DEBUG==1){
+		tau_array = (double *)malloc(sizeof(double)*box_vol(dim_nbody));
+	}
 
 // Start OMP block
 #pragma omp parallel num_threads(nthreads) default(none) \
@@ -244,7 +246,9 @@ reduction(+:op_thick_c,Tb_ave)
 				det = right - left;
 				// calculate optical depth for this cell 
 				tau_c = cal_tau(i,j,k, delta, nHI, Ts, det,zrl);
-				tau_array[in_tr(i,j,k,dim_nbody)] = tau_c;//<-----------------------Debug
+				if(DEBUG==1){
+					tau_array[in_tr(i,j,k,dim_nbody)] = tau_c;//<-----------------------Debug
+				}
 				// decide whether this cell diverge 
 				if(!isfinite(tau_c)){
 					# pragma omp atomic
@@ -339,31 +343,35 @@ reduction(+:op_thick_c,Tb_ave)
 	Tb_ave /= pow((double)dim_nbody,3.0);
 	*TB_AVE = Tb_ave;
 
-	// Output tau data cube <-------------------------------------------------------Debug
-	FILE *fp_dbg;
-	char filename_dbg[M_BOXNAME] = {'\0'};
-	char flag_opthin, flag_hights, flag_space[3];
-	if(OPTHIN)
-		flag_opthin = 'T';// optical-Thin 
-	else
-		flag_opthin = 'F';// Full optical depth
-	if(HIGHTS)
-		flag_hights = 'H';// High spin temperature limit
-	else
-		flag_hights = 'N';// Normal spin temperature treatment
-	if(MESH2MESH)
-		strcpy(flag_space, "RS");// RedShift space
-	else
-		strcpy(flag_space, "RE");// REal space 
-	sprintf(filename_dbg, 
-		"../Output_boxes/tau_binary/\
+	if(DEBUG==1)
+	{
+		// Output tau data cube <-------------------------------------------------------Debug
+		FILE *fp_dbg;
+		char filename_dbg[M_BOXNAME] = {'\0'};
+		char flag_opthin, flag_hights, flag_space[3];
+		if(OPTHIN)
+			flag_opthin = 'T';// optical-Thin 
+		else
+			flag_opthin = 'F';// Full optical depth
+		if(HIGHTS)
+			flag_hights = 'H';// High spin temperature limit
+		else
+			flag_hights = 'N';// Normal spin temperature treatment
+		if(MESH2MESH)
+			strcpy(flag_space, "RS");// RedShift space
+		else
+			strcpy(flag_space, "RE");// REal space 
+		system("mkdir ../Output_boxes/tau_binary");
+		sprintf(filename_dbg, 
+			"../Output_boxes/tau_binary/\
 tau_pdf_debug_Aprox%c%c_%sSpace_z%05.2f_dim%04d_size%04.0f_los%d",
-		flag_opthin,flag_hights,flag_space,
-		zrl,dim_nbody,box_size,LoS_state); 
-	fp_dbg = fopen(filename_dbg,"w");
-	fwrite(tau_array, sizeof(double), box_vol(dim_nbody), fp_dbg);
-	fclose(fp_dbg);
-	free(tau_array);
+			flag_opthin,flag_hights,flag_space,
+			zrl,dim_nbody,box_size,LoS_state); 
+		fp_dbg = fopen(filename_dbg,"w");
+		fwrite(tau_array, sizeof(double), box_vol(dim_nbody), fp_dbg);
+		fclose(fp_dbg);
+		free(tau_array);
+	}
 	// return optical-thick cell counts
 	return (float)op_thick_c;
 }

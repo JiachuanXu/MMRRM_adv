@@ -69,14 +69,18 @@ int main(int argc, char *argv[])
 	start_time=time(NULL);
 	local=localtime(&start_time);
 	// Create folders
-	system("mkdir ../Log_files");
-	system("mkdir ../Log_files/MMRRM_adv");
+	if(access("../Log_files",F_OK)==-1)
+		system("mkdir ../Log_files");
+	if(access("../Log_files/MMRRM_adv",F_OK)==-1)
+		system("mkdir ../Log_files/MMRRM_adv");
 	// Creat log file 
 	sprintf(LOG_NAME,"../Log_files/MMRRM_adv/MMRRM_adv_log_file_\
 %d_%d_%d_%d:%d:%d",local->tm_year+YEAR_START,local->tm_mon+MON_START,
 local->tm_mday,local->tm_hour,local->tm_min,local->tm_sec);// Name of log file <----Log file name
-	sprintf(cmd,"mkdir %s",MMRRM_BOX_OP);
-	system(cmd);
+	if(access(MMRRM_BOX_OP,F_OK)==-1){
+		sprintf(cmd,"mkdir %s",MMRRM_BOX_OP);
+		system(cmd);
+	}
 	printf("Creating log file...\n");
 	LOG=fopen(LOG_NAME,"a");
 	if(LOG==NULL){
@@ -96,7 +100,8 @@ local->tm_mday,local->tm_hour,local->tm_min,local->tm_sec);// Name of log file <
 	// If want to calculate kurtosis, skewness, <rms>...
 	// create list recording output boxes' filename
 	if(STATIS==1){
-		system("mkdir ../Log_files/Output_List");
+		if(access("../Log_files/Output_List",F_OK)==-1)
+			system("mkdir ../Log_files/Output_List");
 		getname_List(LIST_NAME, nr);
 		oplist=fopen(LIST_NAME,"w");
 		if(oplist==NULL){
@@ -113,7 +118,8 @@ Error: Can't create output list file!\n");
 	// Create global evolution log file 
 	if(GLOBAL_EVOL){
 		char GE_Name[M_BOXNAME];
-		system("mkdir ../Log_files/Global_Evolution");
+		if(access("../Log_files/Global_Evolution",F_OK)==-1)
+			system("mkdir ../Log_files/Global_Evolution");
 		getname_GloEvo(GE_Name, local);
 		GLOB_EVOL = fopen(GE_Name,"w");
 	}

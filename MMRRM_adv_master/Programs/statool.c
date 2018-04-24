@@ -21,8 +21,10 @@ int main(int argc, char *argv[]){
 
 	start_time=time(NULL);
 	local=localtime(&start_time);
-	system("mkdir ../Log_files");
-	system("mkdir ../Log_files/Statistics");
+	if(access("../Log_files",F_OK)==-1)
+		system("mkdir ../Log_files");
+	if(access("../Log_files/Statistics",F_OK)==-1)
+		system("mkdir ../Log_files/Statistics");
 	/*if(OPTHIN){
 		if(HIGHTS)
 			sprintf(STAT_NAME,"%s/Statistics/Stat_info_TH_%d_%d_%d_%d:%d:%d",MMRRM_PS_OP,local->tm_year+YEAR_START,local->tm_mon+MON_START,local->tm_mday,local->tm_hour,local->tm_min,local->tm_sec);
@@ -68,10 +70,16 @@ int main(int argc, char *argv[]){
 		arg_fgets((*((struct TbList *)list+ct)).fTb_z,M_BOXNAME,LIST);
 	}
 	fclose(LIST);
-	sprintf(cmd,"mkdir %s",MMRRM_PS_OP);
-	system(cmd);
-	sprintf(cmd,"mkdir %s/Statistics",MMRRM_PS_OP);
-	system(cmd);
+	if(access(MMRRM_PS_OP,F_OK)==-1){
+		sprintf(cmd,"mkdir %s",MMRRM_PS_OP);
+		system(cmd);
+	}
+	char MT[M_BOXNAME];
+	sprintf(MT,"%s/Statistics",MMRRM_PS_OP);
+	if(access(MT,F_OK)==-1){
+		sprintf(cmd,"mkdir %s/Statistics",MMRRM_PS_OP);
+		system(cmd);
+	}
 	getname_stat(STAT_NAME, local);
 	STAT=fopen(STAT_NAME,"w");
 	fprintf(STAT,"# %5s\t%12s\t%12s\t%12s\t%12s\t%12s\n","zrl","Tb_mean","Tb_dev","Tb_rms","Skewness","Kurtosis");

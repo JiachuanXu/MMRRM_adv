@@ -41,8 +41,10 @@ int main(int argc,char *argv[]){
 		printf("USAGE: ./test_mudecomp <Tb x> <Tb y> <Tb z> <box PATH> <delta> <xHI> <Ts> <dim_rt>\n");
 		exit(EXIT_FAILURE);
 	}
-	system("mkdir ../Log_files");
-	system("mkdir ../Log_files/Mu_decomp");
+	if(access("../Log_files",F_OK)==-1)
+		system("mkdir ../Log_files");
+	if(access("../Log_files/Mu_decomp",F_OK)==-1)
+		system("mkdir ../Log_files/Mu_decomp");
 	sprintf(LOG_NAME,"../Log_files/Mu_decomp/mudecomp_log_file_%d_%d_%d_%d:%d:%d",local->tm_year+YEAR_START,local->tm_mon+MON_START,local->tm_mday,local->tm_hour,local->tm_min,local->tm_sec);
 	LOG=fopen(LOG_NAME,"w");
 	read_title(argv[1],&zrl,&box_size,&dim_nbody,&opthin,&hights,&mesh2mesh);
@@ -140,10 +142,16 @@ int main(int argc,char *argv[]){
 	fftw_free(power_Pmu4); power_Pmu4 = NULL;
 	
 	/******************************** 						  Print the result  						 ********************************/
-	sprintf(cmd,"mkdir %s",MMRRM_PS_OP);
-	system(cmd);
-	sprintf(cmd,"mkdir %s/Mu_decomp",MMRRM_PS_OP);
-	system(cmd);
+	if(access(MMRRM_PS_OP,F_OK)==-1){
+		sprintf(cmd,"mkdir %s",MMRRM_PS_OP);
+		system(cmd);
+	}
+	char MT[M_BOXNAME];
+	sprintf(MT, "%s/Mu_decomp", MMRRM_PS_OP);
+	if(access(MT, F_OK)==-1){
+		sprintf(cmd,"mkdir %s/Mu_decomp",MMRRM_PS_OP);
+		system(cmd);
+	}
 	if(MUDECINK){
 		getname_MD_Lin(mudecomp_lin);
 		MUDECOMP_LIN = fopen(mudecomp_lin,"w");

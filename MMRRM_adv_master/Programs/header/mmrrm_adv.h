@@ -12,6 +12,7 @@
 #include <float.h>
 #include <time.h>
 #include <complex.h>
+#include <unistd.h>
 #include <fftw3.h>
 #ifdef _OPENMP
 	#include <omp.h>
@@ -56,7 +57,8 @@
 #define Om  (double)(0.308)	//Omega matter
 #define Ol  (double)(1.0-Om)	//Omega lambda
 #define Ob  (double)(0.048)	//Omega baryons
-#define Hz(z) (double)(H * sqrt(Om * pow((double)(1.0+z),3.0) + Ol))// Matter dominant
+#define Ez(z) (double)(sqrt(Om * pow((double)(1.0+z),3.0) + Ol)) // Matter dominant
+#define Hz(z) (double)(H * Ez(z))// Matter dominant
 #define cell_size(box_size, dim) (double)((box_size)/(dim))	//In units of Mpc
 #define T21 (double)(0.0628) //temperature corresponding to the 21cm photon, K
 #define T_cmb0  (double)(2.728) // K

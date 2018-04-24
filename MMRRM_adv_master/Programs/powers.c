@@ -34,8 +34,10 @@ int main(int argc, char *argv[]){
 	}
 	start_time=time(NULL);
 	local=localtime(&start_time);
-	system("mkdir ../Log_files");
-	system("mkdir ../Log_files/Powers");
+	if(access("../Log_files",F_OK)==-1)
+		system("mkdir ../Log_files");
+	if(access("../Log_files/Powers",F_OK)==-1)
+		system("mkdir ../Log_files/Powers");
 	sprintf(LOG_NAME,"../Log_files/Powers/SAPS_logfile_%d_%d_%d_%d:%d:%d",local->tm_year+YEAR_START,local->tm_mon+MON_START,local->tm_mday,local->tm_hour,local->tm_min,local->tm_sec);
 	LOG=fopen(LOG_NAME,"a");
 	if(LOG==NULL){
@@ -44,8 +46,10 @@ int main(int argc, char *argv[]){
 	}
 	else
 		fprintf(LOG," Log files for powers_k\n Date: %s\n",asctime(local));
-	sprintf(cmd,"mkdir %s",MMRRM_PS_OP);
-	system(cmd);
+	if(access(MMRRM_PS_OP,F_OK)==-1){
+		sprintf(cmd,"mkdir %s",MMRRM_PS_OP);
+		system(cmd);
+	}
 
 // Reading file title 
 	read_title(argv[1],&z,&box_size,&dim,&opthin,&hights,&mesh2mesh);
@@ -103,8 +107,12 @@ int main(int argc, char *argv[]){
 	}
 
 	if(POWINK){
-		sprintf(cmd,"mkdir %s/SAPS_lin",MMRRM_PS_OP);
-		system(cmd);
+		char MT[M_BOXNAME];
+		sprintf(MT,"%s/SAPS_lin",MMRRM_PS_OP);
+		if(access(MT,F_OK)==-1){
+			sprintf(cmd,"mkdir %s/SAPS_lin",MMRRM_PS_OP);
+			system(cmd);
+		}
 		/*if(OPTHIN==1){
 			if(HIGHTS)
 				sprintf(PS_LIN_NAME,"%s/SAPS_lin/SAPS_TH_k_z%05.2f_dim%04d_size%04.0fMpc.dat",MMRRM_PS_OP,z,dim,box_size);
@@ -133,8 +141,12 @@ int main(int argc, char *argv[]){
 		free(k_array_lin); k_array_lin = NULL;
 	}
 	if(POWINLOGK){
-		sprintf(cmd,"mkdir %s/SAPS_log",MMRRM_PS_OP);
-		system(cmd);
+		char MT[M_BOXNAME];
+		sprintf(MT,"%s/SAPS_log",MMRRM_PS_OP);
+		if(access(MT,F_OK)==-1){
+			sprintf(cmd,"mkdir %s/SAPS_log",MMRRM_PS_OP);
+			system(cmd);
+		}
 		/*if(OPTHIN==1){
 			if(HIGHTS)
 				sprintf(PS_LOG_NAME,"%s/SAPS_log/SAPS_TH_logk_z%05.2f_dim%04d_size%04.0fMpc.dat",MMRRM_PS_OP,z,dim,box_size);

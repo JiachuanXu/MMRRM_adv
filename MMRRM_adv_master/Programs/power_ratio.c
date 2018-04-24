@@ -36,8 +36,10 @@ int main(int argc,char *argv[]){
 	}
 	start_time=time(NULL);
 	local=localtime(&start_time);
-	system("mkdir ../Log_files");
-	system("mkdir ../Log_files/Power_Ratio");
+	if(access("../Log_files",F_OK)==-1)
+		system("mkdir ../Log_files");
+	if(access("../Log_files/Power_Ratio",F_OK)==-1)
+		system("mkdir ../Log_files/Power_Ratio");
 	sprintf(LOG_NAME,"../Log_files/Power_Ratio/log_%d_%d_%d_%d:%d:%d",local->tm_year+YEAR_START,local->tm_mon+MON_START,local->tm_mday,local->tm_hour,local->tm_min,local->tm_sec);
 	LOG=fopen(LOG_NAME,"a");
 	if(LOG==NULL){
@@ -46,8 +48,10 @@ int main(int argc,char *argv[]){
 	}
 	else
 		fprintf(LOG," Log files for power_ratio\n Date: %s\n",asctime(local));
-	sprintf(cmd,"mkdir %s",MMRRM_PS_OP);
-	system(cmd);
+	if(access(MMRRM_PS_OP,F_OK)==-1){
+		sprintf(cmd,"mkdir %s",MMRRM_PS_OP);
+		system(cmd);
+	}
 	read_title(argv[1],&z,&box_size,&dim,&opthin,&hights,&mesh2mesh);
 	printf("****** Calling power_ratio z = %.2f\n", z);
 	mid=dim/2;
@@ -114,8 +118,12 @@ int main(int argc,char *argv[]){
 		sprintf(RATIO,"%s/PS_Ratio/Ratio_z%05.2f_dim%04d_size%04.0fMpc", MMRRM_PS_OP, z, dim, box_size);
 	else
 		sprintf(RATIO,"%s/PS_Ratio/Ratio_z%05.2f_dim%04d_size%04.0fMpc_%s", MMRRM_PS_OP, z, dim, box_size,argv[7]);*/
-	sprintf(cmd, "mkdir %s/PS_Ratio", MMRRM_PS_OP);
-	system(cmd);
+	char MT[M_BOXNAME];
+	sprintf(MT,"%s/PS_Ratio",MMRRM_PS_OP);
+	if(access(MT,F_OK)==-1){
+		sprintf(cmd, "mkdir %s/PS_Ratio", MMRRM_PS_OP);
+		system(cmd);
+	}
 	getname_Ratio(RATIO, argc, argv);
 	if((fp = fopen(RATIO, "w"))==NULL){
 		printf("*** power_ratio.c: ERROR: Can't creat file\n");

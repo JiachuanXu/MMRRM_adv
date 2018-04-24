@@ -22,6 +22,19 @@ struct TbList{
 
 struct realization * read_args(char *boxes_PATH,float *box_size, int *dim_nbody, int *dim_rt, int *nr);
 void read_title(char *filename,float *zrl,float *box_size,int *dim, int *flag_O, int *flag_T, int *flag_mm);
+
+// arg_fgets: 	get arguments from args_mmrrm_adv.dat file 
+// 				a modification of fgets(), only read one line each time
+//				will skip comment lines beginning with "#"
+//				will skip blank lines
+//				will ignore the space infront of the contents
+//				will terminate the program if argument out-of-length
+//				if reach the end of file (EOF), will set list as "EOF"
+// Inputs:
+// 	linemax:	the max length of the arguments(see header/mmrrm_adv.h)
+//	f_p:		file pointer of the argument file 
+// Outputs:
+//	list: 		interpret argument as string
 void arg_fgets(char *list, int linemax, FILE *f_p);
 
 struct realization * read_args(char *boxes_PATH,float *box_size, int *dim_nbody, int *dim_rt, int *nr)
@@ -168,20 +181,56 @@ void read_title(char *filename,float *zrl,float *box_size,int *dim,int *flag_O, 
 	}
 }
 
-void arg_fgets(char *list, int linemax, FILE *f_p){
-	char list_temp[M_TEMP];
-	char *find;
+void arg_fgets(char *list, int linemax, FILE *f_p)
+{
+	char list_temp[M_TEMP];// container for the line 
+	char *find;// pointer used to find '\n'
+	int skip=0;// flag
+	int ispace = 0;
+	// 1. Read line & skip space and comments
 	fgets(list_temp,linemax,f_p);
-	while(list_temp[0]=='\n')
+	// skip space
+	while(list_temp[ispace]==' ')
+		ispace++;
+	while(list_temp[ispace]=='\n'||list_temp[ispace]=='#'){
 		fgets(list_temp,linemax,f_p);
-	find=strchr(list_temp,'\n');
-	if(find==NULL){
-		printf("Error: Error happens while reading argument! Maybe the argument lenth run out of the limit defined in mmrrm_adv.h, or you didn't insert line break between two terms.\n");
-		fprintf(LOG,"Error: Error happens while reading argument! Maybe the argument lenth run out of the limit defined in mmrrm_adv.h, or you didn't insert line break between two terms.\n");
-		fclose(LOG);
-		exit(EXIT_FAILURE);
+		// 2. EOF? Y-return "EOF"; N-go on 
+		if(feof(f_p)==1){
+			printf("read_args.h: End of file!\n");
+			strcpy(list,"EOF");
+			skip = 1;
+			break;
+		}
+		else{// skip space
+			ispace = 0;
+			while(list_temp[ispace]==' ')
+				ispace++;
+		}
 	}
-	else
-		*find='\0';
-	strcpy(list,list_temp);
+	if(skip==0){
+		// 3. End with '\n'? Y-strcpy; N-EOF?
+		find=strchr(list_temp,'\n');
+		if(find==NULL){
+			// 4. EOF? Y-this is the last line, strcpy; N-Out-pf-length!
+			if(feof(f_p)==0){// line out-of-length
+				printf("Error: Error happens while reading argument! \
+Maybe the argument lenth run out of the limit defined in mmrrm_adv.h, \
+or you didn't insert line break between two terms.\n");
+				fprintf(LOG,"Error: Error happens while reading argument! \
+Maybe the argument lenth run out of the limit defined in mmrrm_adv.h, \
+or you didn't insert line break between two terms.\n");
+				list = NULL;
+				fclose(LOG);
+				exit(EXIT_FAILURE);
+			}
+			else{// the last line 
+				printf("End of file!\n");
+				strcpy(list,list_temp + ispace);
+			}
+		}
+		else{// End with '\n'
+			*find='\0';
+			strcpy(list,list_temp + ispace);
+		}
+	}
 }

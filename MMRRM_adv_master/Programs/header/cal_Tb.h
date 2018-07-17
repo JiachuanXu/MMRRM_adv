@@ -160,13 +160,15 @@ float cal_Tb(const float * delta,const float * nHI,const float * Ts,
 	char char_infinite[]="Diverged cells:";
 
 	double *tau_array; // optical depth data cube <---------------------------------Debug
+	double *det_array; // determinent data cube <-----------------------------------Debug
 	if(DEBUG==1){
 		tau_array = (double *)malloc(sizeof(double)*box_vol(dim_nbody));
+		det_array = (double *)malloc(sizeof(double)*box_vol(dim_nbody));
 	}
 
 // Start OMP block
 #pragma omp parallel num_threads(nthreads) default(none) \
-shared(dim_nbody,LoS_state,DIVERG_CELL,zrl,len,vlos,delta, nHI, Ts,Tb, tau_array) \
+shared(dim_nbody,LoS_state,DIVERG_CELL,zrl,len,vlos,delta, nHI, Ts,Tb, tau_array, det_array) \
 private(i,j,k) \
 reduction(+:op_thick_c,Tb_ave)
 {
@@ -249,6 +251,7 @@ reduction(+:op_thick_c,Tb_ave)
 				tau_c = cal_tau(i,j,k, delta, nHI, Ts, det,zrl);
 				if(DEBUG==1){
 					tau_array[in_tr(i,j,k,dim_nbody)] = tau_c;//<-----------------------Debug
+					det_array[in_tr(i,j,k,dim_nbody)] = det;  //<-----------------------Debug
 				}
 				// decide whether this cell diverge 
 				if(!isfinite(tau_c)){
@@ -350,6 +353,7 @@ reduction(+:op_thick_c,Tb_ave)
 		FILE *fp_dbg;
 		char filename_dbg[M_BOXNAME] = {'\0'};
 		char flag_opthin, flag_hights, flag_space[3];
+		char cmd[M_CMD], dir[M_PATH];
 		if(OPTHIN)
 			flag_opthin = 'T';// optical-Thin 
 		else
@@ -362,18 +366,36 @@ reduction(+:op_thick_c,Tb_ave)
 			strcpy(flag_space, "RS");// RedShift space
 		else
 			strcpy(flag_space, "RE");// REal space 
-		system("mkdir ../Output_boxes/tau_binary");
+
+		sprintf(dir, "%s/tau_binary", MMRRM_BOX_OP);
+		if(access(dir,F_OK)==-1){
+		sprintf(cmd,"mkdir %s",dir);
+		system(cmd);
+		}
 		sprintf(filename_dbg, 
-			"../Output_boxes/tau_binary/\
-tau_pdf_debug_Aprox%c%c_%sSpace_z%05.2f_dim%04d_size%04.0f_los%d",
-			flag_opthin,flag_hights,flag_space,
+			"%s/tau_Aprox%c%c_%sSpace_z%05.2f_dim%04d_size%04.0f_los%d",
+			dir, flag_opthin,flag_hights,flag_space,
 			zrl,dim_nbody,box_size,LoS_state); 
 		fp_dbg = fopen(filename_dbg,"w");
 		fwrite(tau_array, sizeof(double), box_vol(dim_nbody), fp_dbg);
 		fclose(fp_dbg);
 		free(tau_array);
+		// output determinent data cube <-----------------------------------------------Debug
+		sprintf(dir, "%s/det_binary", MMRRM_BOX_OP);
+		if(access(dir,F_OK)==-1){
+		sprintf(cmd,"mkdir %s",dir);
+		system(cmd);
+		}
+		sprintf(filename_dbg, 
+			"%s/det_Aprox%c%c_%sSpace_z%05.2f_dim%04d_size%04.0f_los%d",
+			dir, flag_opthin,flag_hights,flag_space,
+			zrl,dim_nbody,box_size,LoS_state); 
+		fp_dbg = fopen(filename_dbg,"w");
+		fwrite(det_array, sizeof(double), box_vol(dim_nbody), fp_dbg);
+		fclose(fp_dbg);
+		free(det_array);
 	}
-	// return optical-thick cell counts
+	// return optical-thick cell counts 
 	return (float)op_thick_c;
 }
 

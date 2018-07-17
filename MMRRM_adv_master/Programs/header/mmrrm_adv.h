@@ -70,13 +70,13 @@
 #define CRE_TAU  (double)(0.1)  // Cretical optical depth
 #define G_const (double)(6.67408e-11)	//in standard unit, m^3*kg^-1*s^-2
 #define rho_cre (double)(3*H*H/(8*PI*G_const*1000*Mpc_over_km*Mpc_over_km))	//Cretical density today, in g*cm^-3
-#define Y_He (double)(0.245)	//Helium fraction
+#define Y_He (double)(0.24)	//Helium fraction (0.245 in 21cmFAST, 0.24 in Furlanetto)
 #define MU_H (double)(1.67353276e-24)	//Mass of one H atom, g
 #define Ts_lim (double)(9.999e10) //Set the Ts in high temperature limit
 
 /****	FLAGS	****/
 /* Flag for observer frame of output data cube  */
-#define MESH2MESH 0 // 1 to calculate observables in redshift space, 0 in real space
+#define MESH2MESH 1 // 1 to calculate observables in redshift space, 0 in real space
 /* Flag for approximations in RSD correction */
 /* If you do not have Ts information, set both OPTHIN & HIGHTS = 1*/
 #define OPTHIN 1 // 1 for artificially applying optical thin approximation, 0 for standard routine
@@ -94,8 +94,8 @@
 #define DEBUG 0 // 1 to turn on debugging 
 
 /*	PATH 	*/
-#define MMRRM_BOX_OP "../Output_boxes"// Output dir of MMRRM boxes
-#define MMRRM_PS_OP "../Output_PS" // Output dir of MMRRM power spectrum and other statistics
+#define MMRRM_BOX_OP "/scratch/xjc14/datarepo_MMRRM_adv/Output_boxes"// Output dir of MMRRM boxes
+#define MMRRM_PS_OP "/scratch/xjc14/datarepo_MMRRM_adv/Output_PS" // Output dir of MMRRM power spectrum and other statistics
 
 
 #endif

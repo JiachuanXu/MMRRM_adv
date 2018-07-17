@@ -293,7 +293,7 @@ Reading input files...\n",info[real_ct].zrl);
 	// z, Ts, T_CMB, eta, $\delta T_b$, <xHI>_v, <xHI>_m, f_op-thick
 	// 1,  K,     K,   1,      mK or K,       1,       1,          1
 	if(GLOBAL_EVOL){
-		fprintf(GLOB_EVOL, "# z\tTs\tTcmb\teta\tdelta_Tb\txHI_v\txHI_m\tf_op-thick\n")
+		fprintf(GLOB_EVOL, "# z\tTs\tTcmb\teta\tdelta_Tb\txHI_v\txHI_m\tf_op-thick\n");
 		for(int i=0;i<nr;i++)
 			fprintf(GLOB_EVOL, "%.2f\t%e\t%e\t%.4f\t%e\t%e\t%e\t%f\n", 
 			info[i].zrl, Ts_Evol[i],Tcmb_Evol[i],eta_Evol[i],Tb_Evol[i],

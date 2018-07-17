@@ -60,7 +60,7 @@
 #define Ez(z) (double)(sqrt(Om * pow((double)(1.0+z),3.0) + Ol)) // Matter dominant
 #define Hz(z) (double)(H * Ez(z))// Matter dominant
 #define cell_size(box_size, dim) (double)((box_size)/(dim))	//In units of Mpc
-#define T21 (double)(0.0628) //temperature corresponding to the 21cm photon, K
+#define T21 (double)(0.068) //temperature corresponding to the 21cm photon, K
 #define T_cmb0  (double)(2.728) // K
 #define T_cmb(z)  T_cmb0*(1.0+(double)z) // K
 #define A10  (double)(2.85e-15) // spontaneous emission coefficient in s^-1

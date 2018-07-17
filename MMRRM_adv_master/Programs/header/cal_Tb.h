@@ -127,6 +127,7 @@ float Mass_Ave(const float * rho, const float * xHI, int dim_nbody,
 // Return:
 //		<$\eta$>: [dimensionless]
 double Eta_Ave(const float * Ts, float zrl, int dim);
+
 // Tb_hat: calculate $\hat{T_b}$, numerical rules
 // Inputs:
 //		zrl:	redshift, [dimensionless]

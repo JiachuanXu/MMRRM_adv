@@ -5,6 +5,7 @@
 // Conduct statictical analysis
 // Edit history:
 // 2018.4.20: Add more comments, Jiachuan Xu
+// 2018.7.16: Add more comments, add <eta> into global properties, Jiachuan Xu
 
 /*
 	USAGE: Edit the argumets in 
@@ -19,16 +20,20 @@
 #include "header/read_write_box.h"
 #include "header/cal_Tb.h"
 
+/******************************************************************/
 /*******************	Variable Declaration	*******************/
+/******************************************************************/
 
 char boxes_PATH[M_PATH];
-struct realization * info;// contents for data cubes
+struct realization * info;// information of data cubes
 float box_size;
 int dim_nbody, dim_rt;// dimension of N-body & RT
 int nr;// number of data cubes to be processed
 FILE *LOG;
 
-/********************	Function Declaration	********************/
+/******************************************************************/
+/********************	Function Declaration	*******************/
+/******************************************************************/
 
 // getname_Tb: generate the filename for $\delta T_b$ data cube
 // Inputs:
@@ -53,7 +58,9 @@ void getname_List(char *filename, int nr);
 //		filename
 void getname_GloEvo(char *filename, struct tm *now);
 
+/******************************************************************/
 /***********************	Main Program	***********************/
+/******************************************************************/
 
 int main(int argc, char *argv[])
 {
@@ -69,6 +76,10 @@ int main(int argc, char *argv[])
 	start_time=time(NULL);
 	local=localtime(&start_time);
 	// Create folders
+	if(access(MMRRM_BOX_OP,F_OK)==-1){
+		sprintf(cmd,"mkdir %s",MMRRM_BOX_OP);
+		system(cmd);
+	}
 	if(access("../Log_files",F_OK)==-1)
 		system("mkdir ../Log_files");
 	if(access("../Log_files/MMRRM_adv",F_OK)==-1)
@@ -77,10 +88,6 @@ int main(int argc, char *argv[])
 	sprintf(LOG_NAME,"../Log_files/MMRRM_adv/MMRRM_adv_log_file_\
 %d_%d_%d_%d:%d:%d",local->tm_year+YEAR_START,local->tm_mon+MON_START,
 local->tm_mday,local->tm_hour,local->tm_min,local->tm_sec);// Name of log file <----Log file name
-	if(access(MMRRM_BOX_OP,F_OK)==-1){
-		sprintf(cmd,"mkdir %s",MMRRM_BOX_OP);
-		system(cmd);
-	}
 	printf("Creating log file...\n");
 	LOG=fopen(LOG_NAME,"a");
 	if(LOG==NULL){
@@ -113,7 +120,7 @@ Error: Can't create output list file!\n");
 			fprintf(oplist,"%d\n%d\n%f\n%d\n%d\n%d\n",
 				nr,dim_nbody,box_size,OPTHIN,HIGHTS,MESH2MESH);
 	}
-	// If want to calculate global evolution of T_CMB, Ts, $\delta T_b$
+	// If want to calculate global evolution of T_CMB, Ts, (1-Tcmb/Ts), $\delta T_b$
 	// <xHI>_v, <xHI>_m and optical thick cells 
 	// Create global evolution log file 
 	if(GLOBAL_EVOL){
@@ -125,7 +132,7 @@ Error: Can't create output list file!\n");
 	}
 
 	// global evolution variables
-	float Ts_Evol[nr],Tcmb_Evol[nr]; 
+	float Ts_Evol[nr],Tcmb_Evol[nr],eta_Evol[nr]; 
 	float xHIv_Evol[nr],xHIm_Evol[nr];
 	float Op_Thick_Evol[nr];// calculate fraction, so float
 	double Tb_Evol[nr];
@@ -152,11 +159,12 @@ Error: Can't create output list file!\n");
 Reading input files...\n",info[real_ct].zrl);
 		fprintf(LOG, "\n****** Processing redshift: %.2f******\n\n\
 Reading input files...\n",info[real_ct].zrl);
+		fflush(LOG);
 		// memory allocation (peculiar velocity will be allocated later)
 		delta = fmyalloc(box_vol(dim_nbody));
 		xHI = fmyalloc(box_vol(dim_rt));
 		Ts = fmyalloc(box_vol(dim_nbody));
-		// read-in & record global info of <xHI>_v, <xHI>_m, Ts, T_CMB
+		// read-in & record global info of <xHI>_v, <xHI>_m, Ts, T_CMB，(1-Tcmb/Ts)
 		fbox_read(delta,boxes_PATH,info[real_ct].n_den,dim_nbody);
 		xHIv_Evol[real_ct] = 
 		fbox_read(xHI,boxes_PATH,info[real_ct].n_xHI,dim_rt);
@@ -176,6 +184,8 @@ Reading input files...\n",info[real_ct].zrl);
 		}
 		Tcmb_Evol[real_ct] = 
 		T_cmb(info[real_ct].zrl);
+		eta_Evol[real_ct] = 
+		Eta_Ave(Ts, info[real_ct].zrl, dim_nbody);
 		
 		/********* Looping through LoS direction: Calculate Tb *********/
 	
@@ -280,12 +290,13 @@ Reading input files...\n",info[real_ct].zrl);
 	}
 	// If want to calculate global evolution
 	// write global info:
-	// z, Ts, T_CMB, $\delta T_b$, <xHI>_v, <xHI>_m, f_op-thick
-	// 1,  K,     K,      mK or K,       1,       1,          1
+	// z, Ts, T_CMB, eta, $\delta T_b$, <xHI>_v, <xHI>_m, f_op-thick
+	// 1,  K,     K,   1,      mK or K,       1,       1,          1
 	if(GLOBAL_EVOL){
+		fprintf(GLOB_EVOL, "# z\tTs\tTcmb\teta\tdelta_Tb\txHI_v\txHI_m\tf_op-thick\n")
 		for(int i=0;i<nr;i++)
-			fprintf(GLOB_EVOL, "%.2f\t%e\t%e\t%e\t%e\t%e\t%f\n", 
-			info[i].zrl, Ts_Evol[i],Tcmb_Evol[i],Tb_Evol[i],
+			fprintf(GLOB_EVOL, "%.2f\t%e\t%e\t%.4f\t%e\t%e\t%e\t%f\n", 
+			info[i].zrl, Ts_Evol[i],Tcmb_Evol[i],eta_Evol[i],Tb_Evol[i],
 			xHIv_Evol[i],xHIm_Evol[i],Op_Thick_Evol[i]); 
 		fclose(GLOB_EVOL);
 	}

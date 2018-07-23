@@ -1,10 +1,10 @@
-	README
-===========================
+README
+=======
 Welcome for any question or suggestion: xjc14@mails.tsinghua.edu.cn
 
 Install:
 ---------------------------
-1. Prerequist: FFTW3, GSL Library, gcc
+1. Pre-rqequist: FFTW3, GSL Library, gcc
 2. Install:
 	Extract the tar file in WORKDIR, then (in terminal)
 	$ cd Programs

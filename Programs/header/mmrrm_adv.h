@@ -91,7 +91,7 @@
 #define TBPDF 1 // 1 to turn on the pdf calculation of Tb, 0 to turn off
 #define STATIS 1	// 1 to turn on the calculation of statistics of sknewness, kurtoisis, mean, dev, rms
 #define GLOBAL_EVOL 1 // 1 to record the global evolution
-#define DEBUG 0 // 1 to turn on debugging 
+#define DEBUG 1 // 1 to turn on debugging 
 
 /*	PATH 	*/
 #define MMRRM_BOX_OP "/scratch/xjc14/datarepo_MMRRM_adv/Output_boxes"// Output dir of MMRRM boxes

@@ -4,47 +4,50 @@ import string
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
+
+DATA_DIR = "/Volumes/JX_exFAT/MMRRM_adv/datarepo_MMRRM_adv/Output_PS"
 ## First we have to define the functions we need to plot a single All-in-one figure.
 ## We divided the figure into three parts: Global Evolution, which indicate where we are; Power Spectrum in log-log coordinate, with the ratio full-treatment over optical thin; the PDF 
 ## First we'll define the function needed to produce the data points, and wrap in into an interface. Then we creat a figure, and refresh the frame
 for i in np.arange(0,83,1):
 	zrl = np.power(1.02,i)*(6*1.0001+1)-1
 	## Prelude: Document information
-	file_GE = ['../Log_files/Global_Evolution/FN_RSSpace_dim0256_size0300_2017_12_6_1:23:36','b','-','Es'] # Filename, color, linestyle, label
+	file_GE = ['%s/../Log_files/Global_Evolution/FN_RSSpace_dim0256_size0300_2018_7_18_8:44:20'%DATA_DIR,'b','-','Es'] # Filename, color, linestyle, label
 
-	file_PS_RS_TN = ['../Output_PS/SAPS_log/SAPS_TN_RSSpace_logk_z%05.2f_dim0256_size0300Mpc.dat' % zrl,'#FFA500','--',r'Thin $\tau_\nu$ & With $T_s$']
-	file_PS_RS_FN = ['../Output_PS/SAPS_log/SAPS_FN_RSSpace_logk_z%05.2f_dim0256_size0300Mpc.dat' % zrl,'#FF0000',':',r'Full $\tau_\nu$ & With $T_s$']
-	file_PS_RS_TH = ['../Output_PS/SAPS_log/SAPS_TH_RSSpace_logk_z%05.2f_dim0256_size0300Mpc.dat' % zrl,'#00BFFF','--',r'Thin $\tau_\nu$ & Without $T_s$']
-	file_PS_RS_FH = ['../Output_PS/SAPS_log/SAPS_FH_RSSpace_logk_z%05.2f_dim0256_size0300Mpc.dat' % zrl,'#0000FF',':',r'Full $\tau_\nu$ & Without $T_s$']
+	file_PS_RS_TN = ['%s/SAPS_log/SAPS_TN_RSSpace_logk_z%05.2f_dim0256_size0300Mpc.dat' %(DATA_DIR, zrl),'#FFA500','--',r'Thin $\tau_\nu$ & With $T_s$']
+	file_PS_RS_FN = ['%s/SAPS_log/SAPS_FN_RSSpace_logk_z%05.2f_dim0256_size0300Mpc.dat' %(DATA_DIR, zrl),'#FF0000',':',r'Full $\tau_\nu$ & With $T_s$']
+	file_PS_RS_TH = ['%s/SAPS_log/SAPS_TH_RSSpace_logk_z%05.2f_dim0256_size0300Mpc.dat' %(DATA_DIR, zrl),'#00BFFF','--',r'Thin $\tau_\nu$ & Without $T_s$']
+	file_PS_RS_FH = ['%s/SAPS_log/SAPS_FH_RSSpace_logk_z%05.2f_dim0256_size0300Mpc.dat' %(DATA_DIR, zrl),'#0000FF',':',r'Full $\tau_\nu$ & Without $T_s$']
 #	file_PS_RS_seq= [file_PS_RS_TN, file_PS_RS_FN, file_PS_RS_TH, file_PS_RS_FH]
 	file_PS_RS_seq= [file_PS_RS_TN, file_PS_RS_FN, file_PS_RS_FH]
-#	file_RA_RS_wt = ['../Output_PS/PS_Ratio/Ratio_RSSpace_z%05.2f_dim0256_size0300Mpc_FN-TN' % zrl,'r',':',r'With $T_s$']
-	file_RA_RS_HN = ['../Output_PS/PS_Ratio/Ratio_RSSpace_z%05.2f_dim0256_size0300Mpc_H-N' % zrl,'r',':',r'H/N: (1-$T_{CMB}$/$T_s$)'] # could be very large
-#	file_RA_RS_wot= ['../Output_PS/PS_Ratio/Ratio_RSSpace_z%05.2f_dim0256_size0300Mpc_FH-TH' % zrl,'b','--',r'Without $T_s$']
-	file_RA_RS_TF = ['../Output_PS/PS_Ratio/Ratio_RSSpace_z%05.2f_dim0256_size0300Mpc_T-F' % zrl,'b','--',r'T/F: (1-$e^{-\tau_\nu}$)'] # around 1
-	file_PDF_RS_TN= ['../Output_PS/Pixelflux_PDF/PDF_TN_RSSpace_z%05.2f_size0300_dim0256_bin100' % zrl,'#FFA500','--',r'Thin $\tau_\nu$ & With $T_s$']	
-	file_PDF_RS_FN= ['../Output_PS/Pixelflux_PDF/PDF_FN_RSSpace_z%05.2f_size0300_dim0256_bin100' % zrl,'#FF0000',':',r'Full $\tau_\nu$ & With $T_s$']
-	file_PDF_RS_TH= ['../Output_PS/Pixelflux_PDF/PDF_TH_RSSpace_z%05.2f_size0300_dim0256_bin100' % zrl,'#00BFFF','--',r'Thin $\tau_\nu$ & Without $T_s$']
-	file_PDF_RS_FH= ['../Output_PS/Pixelflux_PDF/PDF_FH_RSSpace_z%05.2f_size0300_dim0256_bin100' % zrl,'#0000FF',':',r'Full $\tau_\nu$ & Without $T_s$']
+#	file_RA_RS_wt = ['%s/PS_Ratio/Ratio_RSSpace_z%05.2f_dim0256_size0300Mpc_FN-TN' %(DATA_DIR, zrl),'r',':',r'With $T_s$']
+	file_RA_RS_HN = ['%s/PS_Ratio/Ratio_RSSpace_z%05.2f_dim0256_size0300Mpc_H-N' %(DATA_DIR, zrl),'r',':',r'H/N: (1-$T_{CMB}$/$T_s$)'] # could be very large
+#	file_RA_RS_wot= ['%s/PS_Ratio/Ratio_RSSpace_z%05.2f_dim0256_size0300Mpc_FH-TH' %(DATA_DIR, zrl),'b','--',r'Without $T_s$']
+	file_RA_RS_TF = ['%s/PS_Ratio/Ratio_RSSpace_z%05.2f_dim0256_size0300Mpc_T-F' %(DATA_DIR, zrl),'b','--',r'T/F: (1-$e^{-\tau_\nu}$)'] # around 1
+	file_PDF_RS_TN= ['%s/Pixelflux_PDF/PDF_TN_RSSpace_z%05.2f_size0300_dim0256_bin100' %(DATA_DIR, zrl),'#FFA500','--',r'Thin $\tau_\nu$ & With $T_s$']	
+	file_PDF_RS_FN= ['%s/Pixelflux_PDF/PDF_FN_RSSpace_z%05.2f_size0300_dim0256_bin100' %(DATA_DIR, zrl),'#FF0000',':',r'Full $\tau_\nu$ & With $T_s$']
+	file_PDF_RS_TH= ['%s/Pixelflux_PDF/PDF_TH_RSSpace_z%05.2f_size0300_dim0256_bin100' %(DATA_DIR, zrl),'#00BFFF','--',r'Thin $\tau_\nu$ & Without $T_s$']
+	file_PDF_RS_FH= ['%s/Pixelflux_PDF/PDF_FH_RSSpace_z%05.2f_size0300_dim0256_bin100' %(DATA_DIR, zrl),'#0000FF',':',r'Full $\tau_\nu$ & Without $T_s$']
 #	file_PDF_RS_seq=[file_PDF_RS_TN, file_PDF_RS_FN, file_PDF_RS_TH, file_PDF_RS_FH]
 	file_PDF_RS_seq=[file_PDF_RS_TN, file_PDF_RS_FN, file_PDF_RS_FH]
 
-	file_PS_RE_TN = ['../Output_PS/SAPS_log/SAPS_TN_RESpace_logk_z%05.2f_dim0256_size0300Mpc.dat' % zrl,'#FFA500','--',r'Thin $\tau_\nu$ & With $T_s$']
-	file_PS_RE_FN = ['../Output_PS/SAPS_log/SAPS_FN_RESpace_logk_z%05.2f_dim0256_size0300Mpc.dat' % zrl,'#FF0000',':',r'Full $\tau_\nu$ & With $T_s$']
-	file_PS_RE_TH = ['../Output_PS/SAPS_log/SAPS_TH_RESpace_logk_z%05.2f_dim0256_size0300Mpc.dat' % zrl,'#00BFFF','--',r'Thin $\tau_\nu$ & Without $T_s$']
-	file_PS_RE_FH = ['../Output_PS/SAPS_log/SAPS_FH_RESpace_logk_z%05.2f_dim0256_size0300Mpc.dat' % zrl,'#0000FF',':',r'Full $\tau_\nu$ & Without $T_s$']
+	file_PS_RE_TN = ['%s/SAPS_log/SAPS_TN_RESpace_logk_z%05.2f_dim0256_size0300Mpc.dat' %(DATA_DIR, zrl),'#FFA500','--',r'Thin $\tau_\nu$ & With $T_s$']
+	file_PS_RE_FN = ['%s/SAPS_log/SAPS_FN_RESpace_logk_z%05.2f_dim0256_size0300Mpc.dat' %(DATA_DIR, zrl),'#FF0000',':',r'Full $\tau_\nu$ & With $T_s$']
+	file_PS_RE_TH = ['%s/SAPS_log/SAPS_TH_RESpace_logk_z%05.2f_dim0256_size0300Mpc.dat' %(DATA_DIR, zrl),'#00BFFF','--',r'Thin $\tau_\nu$ & Without $T_s$']
+	file_PS_RE_FH = ['%s/SAPS_log/SAPS_FH_RESpace_logk_z%05.2f_dim0256_size0300Mpc.dat' %(DATA_DIR, zrl),'#0000FF',':',r'Full $\tau_\nu$ & Without $T_s$']
 #	file_PS_RE_seq= [file_PS_RE_TN, file_PS_RE_FN, file_PS_RE_TH, file_PS_RE_FH]
 	file_PS_RE_seq= [file_PS_RE_TN, file_PS_RE_FN, file_PS_RE_FH]
-#	file_RA_RE_wt = ['../Output_PS/PS_Ratio/Ratio_RESpace_z%05.2f_dim0256_size0300Mpc_FN-TN' % zrl,'r',':',r'With $T_s$']
-	file_RA_RE_HN = ['../Output_PS/PS_Ratio/Ratio_RESpace_z%05.2f_dim0256_size0300Mpc_H-N' % zrl,'r',':',r'H/N: (1-$T_{CMB}$/$T_s$)']
-#	file_RA_RE_wot= ['../Output_PS/PS_Ratio/Ratio_RESpace_z%05.2f_dim0256_size0300Mpc_FH-TH' % zrl,'b','--',r'Without $T_s$']
-	file_RA_RE_TF = ['../Output_PS/PS_Ratio/Ratio_RESpace_z%05.2f_dim0256_size0300Mpc_T-F' % zrl,'b','--',r'T/F: (1-$e^{-\tau_\nu}$)']
-	file_PDF_RE_TN= ['../Output_PS/Pixelflux_PDF/PDF_TN_RESpace_z%05.2f_size0300_dim0256_bin100' % zrl,'#FFA500','--',r'Thin $\tau_\nu$ & With $T_s$']
-	file_PDF_RE_FN= ['../Output_PS/Pixelflux_PDF/PDF_FN_RESpace_z%05.2f_size0300_dim0256_bin100' % zrl,'#FF0000',':',r'Full $\tau_\nu$ & With $T_s$']
-	file_PDF_RE_TH= ['../Output_PS/Pixelflux_PDF/PDF_TH_RESpace_z%05.2f_size0300_dim0256_bin100' % zrl,'#00BFFF','--',r'Thin $\tau_\nu$ & Without $T_s$']
-	file_PDF_RE_FH= ['../Output_PS/Pixelflux_PDF/PDF_FH_RESpace_z%05.2f_size0300_dim0256_bin100' % zrl,'#0000FF',':',r'Full $\tau_\nu$ & Without $T_s$']
+#	file_RA_RE_wt = ['%s/PS_Ratio/Ratio_RESpace_z%05.2f_dim0256_size0300Mpc_FN-TN' %(DATA_DIR, zrl),'r',':',r'With $T_s$']
+	file_RA_RE_HN = ['%s/PS_Ratio/Ratio_RESpace_z%05.2f_dim0256_size0300Mpc_H-N' %(DATA_DIR, zrl),'r',':',r'H/N: (1-$T_{CMB}$/$T_s$)']
+#	file_RA_RE_wot= ['%s/PS_Ratio/Ratio_RESpace_z%05.2f_dim0256_size0300Mpc_FH-TH' %(DATA_DIR, zrl),'b','--',r'Without $T_s$']
+	file_RA_RE_TF = ['%s/PS_Ratio/Ratio_RESpace_z%05.2f_dim0256_size0300Mpc_T-F' %(DATA_DIR, zrl),'b','--',r'T/F: (1-$e^{-\tau_\nu}$)']
+	file_PDF_RE_TN= ['%s/Pixelflux_PDF/PDF_TN_RESpace_z%05.2f_size0300_dim0256_bin100' %(DATA_DIR, zrl),'#FFA500','--',r'Thin $\tau_\nu$ & With $T_s$']
+	file_PDF_RE_FN= ['%s/Pixelflux_PDF/PDF_FN_RESpace_z%05.2f_size0300_dim0256_bin100' %(DATA_DIR, zrl),'#FF0000',':',r'Full $\tau_\nu$ & With $T_s$']
+	file_PDF_RE_TH= ['%s/Pixelflux_PDF/PDF_TH_RESpace_z%05.2f_size0300_dim0256_bin100' %(DATA_DIR, zrl),'#00BFFF','--',r'Thin $\tau_\nu$ & Without $T_s$']
+	file_PDF_RE_FH= ['%s/Pixelflux_PDF/PDF_FH_RESpace_z%05.2f_size0300_dim0256_bin100' %(DATA_DIR, zrl),'#0000FF',':',r'Full $\tau_\nu$ & Without $T_s$']
 #	file_PDF_RE_seq=[file_PDF_RE_TN, file_PDF_RE_FN, file_PDF_RE_TH, file_PDF_RE_FH]
 	file_PDF_RE_seq=[file_PDF_RE_TN, file_PDF_RE_FN, file_PDF_RE_FH]
+
 
 	##Part 1: Construct the canvas
 	fig = Figure(figsize = (12, 10))
@@ -53,7 +56,7 @@ for i in np.arange(0,83,1):
 	axes_GE_opthick = fig.add_axes([0.1,0.15,0.2,0.1])
 	axes_GE_xHI     = fig.add_axes([0.1,0.25,0.2,0.1])
 	axes_GE_TT      = fig.add_axes([0.1,0.35,0.2,0.25])
-	axes_GE_Tb      = fig.add_axes([0.1,0.6,0.2,0.25])
+	axes_GE_Tb      = fig.add_axes([0.1,0.6,0.2,0.25])% zrl
 	axes_GE_Tb.set_title('Global Evolution(Redshift Space)')
 	axes_GE_opthick.set_xlabel('Redshift')
 	axes_GE_opthick.set_ylabel('Fraction')

@@ -1,9 +1,11 @@
 # OpticalDepthInvestigation.py
 # Investigate the relation between optical depth, Ts and |1+delta_v|
 import numpy as np
+import matplotlib
+matplotlib.use('pdf') # backend
 import matplotlib.pyplot as plt
 from MMRRM_toolkit import ReadBinary
-import os, re
+import os, re, sys, math
 
 #########################
 ### Define Parameters ###
@@ -45,14 +47,14 @@ filelist = np.zeros(len(z_array), dtype=my_dtype)
 # read tau
 with open("temp", mode='r') as file:
 	for line in file.readlines():
-		filename = line[:-1].split('/')[-1]
+		filename = line.split('/')[-1]
 		# read redshift
 		z = re.search(r'_z(.*?)_', filename).group(1)
 		z = float(z)
 		index = z_dict[z]
 		# read los
-		los = re.search(r'_los(.*?)', filename).group(1)
-		los = int(los)-1
+		los = re.search(r"_los(\d)", filename).group(1)
+		los = int(los[0])-1
 		# record filename
 		filelist[index]['tau'][los] = line[:-1]
 		filelist[index]['z'] = z
@@ -61,13 +63,13 @@ os.system("rm temp")
 os.system("ls %s/det_AproxFN_RSSpace_z* > temp"%DET_DIR)
 with open("temp", mode='r') as file:
 	for line in file.readlines():
-		filename = line[:-1].split('/')[-1]
+		filename = line.split('/')[-1]
 		# read redshift
 		z = re.search(r'_z(.*?)_', filename).group(1)
 		z = float(z)
 		index = z_dict[z]
 		# read los
-		los = re.search(r'_los(.*?)', filename).group(1)
+		los = re.search(r'_los(\d)', filename).group(1)
 		los = int(los)-1
 		# record filename
 		filelist[index]['det'][los] = line[:-1]
@@ -86,7 +88,8 @@ with open("temp", mode='r') as file:
 os.system("rm temp")
 
 ### loop through z
-for i,zrl in enumerate(z_array)
+for i,zrl in enumerate(z_array):
+	print("Processing z = %.2f..."%zrl)
 #	data_tau = np.zeros(3*DIM*DIM*DIM, dtype=float)
 	data_det = np.zeros(3*DIM*DIM*DIM, dtype=float)
 	data_Ts = np.zeros(3*DIM*DIM*DIM, dtype=float)
@@ -116,33 +119,34 @@ for i,zrl in enumerate(z_array)
 	# determine range
 	Ts_lim = [min(data_Ts), max(data_Ts)]
 	det_lim = [min(data_det), max(data_det)]
-	fig, (ax1, ax2, ax3, ax4) = plt.subplots(2,2,sharex=True, sharey=True)
+	fig, axes_ = plt.subplots(2,2,sharex=True, sharey=True)
 	fig.suptitle("z=%.2f"%zrl)
-	axes = [ax1,ax2,ax3,ax4]
+	axes = [axes_[0,0],axes_[0,1],axes_[1,0],axes_[1,1]]
 	indexbin = [indexbin_1, indexbin_2, indexbin_3, indexbin_4]
 	for j in range(4):
 		# bin into histogram
-		hist_temp, xedges, yedges = np.histogram(data_Ts[indexbin[j]], 
-			data_det[indexbin[j]], 
-			range=[Ts_lim[0], Ts_lim[1], det_lim[0], det_lim[1]], 
-			bins=[BINS,BINS])
+		hist_temp, xedges, yedges = np.histogram2d(data_Ts[indexbin[j]], 
+			data_det[indexbin[j]], range=[Ts_lim, det_lim], 
+			bins=[np.logspace(math.log(Ts_lim[0],10), math.log(Ts_lim[1],10), 
+			BINS+1, endpoint=True),
+			np.linspace(det_lim[0], det_lim[1], BINS+1, endpoint=True)])
 		percentage = len(indexbin[j])/float(3*DIM*DIM*DIM)*100.
 		# plot the data in 4 bins
 		# get 2D percentage density
-		hist = hist_temp/(3*DIM*DIM*DIM*(Ts_lim[1]-Ts_lim[0])*
+		hist = hist_temp/(3*DIM*DIM*DIM*(math.log(Ts_lim[1],10)-math.log(Ts_lim[0],10))*
 			(det_lim[1]-det_lim[0])/BINS/BINS)
-		xcoord = (xedges[1:]+xedges[:-1])/2.
+		xcoord = np.sqrt(xedges[1:]*xedges[:-1])
 		ycoord = (yedges[1:]+yedges[:-1])/2.
 		# plot contour
 		axes[j].contourf(ycoord, xcoord, hist, LEVEL, cmap='Reds',origin='lower',
 			extent=[det_lim[0],det_lim[1],Ts_lim[0],Ts_lim[1]])
-		c = axes[j].contour(ycoord,xcoord,hist, LEVEL, origin='lower',
-			extent=[det_lim[0],det_lim[1],Ts_lim[0],Ts_lim[1]])
-		plt.clabel(c, inline=True, fontsize=12)
-		axes[j].text(0.9,0.1,'Per: %.4f%'%percentage,horizontalalignment='center',
+		c = axes[j].contour(ycoord,xcoord,hist, LEVEL, origin='lower',colors='black',extent=[det_lim[0],det_lim[1],Ts_lim[0],Ts_lim[1]],linewidths=0.5,linestyles='dashdot')
+		plt.clabel(c, inline=True, fontsize=8)
+		axes[j].set_yscale('log')
+		axes[j].text(0.9,0.1,r'Per: %.2f'%percentage,horizontalalignment='right',
 			verticalalignment='center', transform=axes[j].transAxes)
-	axes[0].set_ylabel(r"T_s [K]")
-	axes[2].set_ylabel(r"T_s [K]")
+	axes[0].set_ylabel(r"$T_s$ [K]")
+	axes[2].set_ylabel(r"$T_s$ [K]")
 	axes[2].set_xlabel(r"$|1+\delta_{\partial_r v}|$")
 	axes[3].set_xlabel(r"$|1+\delta_{\partial_r v}|$")
 
@@ -151,5 +155,5 @@ for i,zrl in enumerate(z_array)
 		os.system("mkdir %s"%IMAGE_DIR)
 	if os.path.exists(IMAGE_DIR+"/TauInvestigate")==False:
 		os.system("mkdir %s/TauInvestigate"%IMAGE_DIR)
-	fig.savefig(IMAGE_DIR+"/TauInvestigate/z%5.2f_256_300Mpc.png"%zrl, 
+	fig.savefig(IMAGE_DIR+"/TauInvestigate/z%05.2f_256_300Mpc.png"%zrl, 
 		format='png',dpi=150)
